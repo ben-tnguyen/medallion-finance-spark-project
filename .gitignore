@@ -1,0 +1,37 @@
+# --- DATA ---
+# Ignore the local data lake (Bronze, Silver, Gold layers)
+data/
+*.csv
+*.parquet
+*.json
+
+# --- PYTHON ---
+# Ignore the virtual environment folder
+venv/
+.venv/
+env/
+bin/
+lib/
+include/
+
+# Ignore Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- SYSTEM FILES (MAC) ---
+# Ignore Mac-specific hidden files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# --- IDE SETTINGS ---
+# Ignore VS Code specific settings/history
+.vscode/
+.history/
+*.code-workspace
+
+# --- LOGS ---
+# Ignore log files
+*.log
