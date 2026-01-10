@@ -8,7 +8,6 @@ spark = SparkSession.builder.appName("StockGoldLayer").getOrCreate()
 silver_df = spark.read.parquet("data/silver/2026-01-09/stock_analytic.parquet")
 
 # 2. Aggregation: Volatility Rank (Risk Report)
-# We calculate the mean volatility for each stock to see which is "riskiest"
 risk_report = silver_df.groupBy("Ticker").agg(
     F.mean("7_Day_Vol").alias("Avg_Weekly_Volatility"),
     F.max("Close").alias("Year_High"),
@@ -16,9 +15,6 @@ risk_report = silver_df.groupBy("Ticker").agg(
 ).orderBy(F.desc("Avg_Weekly_Volatility"))
 
 # 3. Business Logic: Simple Moving Average (SMA) Crossover Signals
-# Strategy: If 7-day MA > 21-day MA, it's a "Bullish" trend.
-# Note: For a real 21-day MA, you'd add that in the Silver layer first. 
-# Here we'll use a simple logic: If Close > 7_Day_MA, then 'BUY'
 trading_signals = silver_df.withColumn(
     "Signal",
     F.when(F.col("Close") > F.col("7_Day_MA"), "BUY")
