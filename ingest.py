@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-# configuration: selecting symbols relevant to an institutional investor like AIMCo
+
 TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'CADUSD=X'] 
 START_DATE = '2023-01-01'
 END_DATE = datetime.now().strftime('%Y-%m-%d')

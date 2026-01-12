@@ -4,7 +4,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import input_file_name, regexp_extract
 import os
 
-# 1. Initialize Spark Session
+# Initialize Spark Session
 spark = SparkSession.builder \
     .appName("AIMCo_Silver_Transformation") \
     .getOrCreate()
@@ -16,21 +16,21 @@ def run_transformation():
 
     print(f"Reading Bronze data from: {input_path}")
 
-    # 1. Read the data AND extract the Ticker from the filename
+    # Read the data AND extract the Ticker from the filename
     raw_df = spark.read.csv(input_path, header=True, inferSchema=True) \
         .withColumn("filename", input_file_name()) \
         .withColumn("Ticker", regexp_extract("filename", r"([^/]+)_raw\.csv$", 1))
 
-    # 2. Define the Window (Now Spark knows what 'Ticker' is!)
+    # Define the Window (Now Spark knows what 'Ticker' is!)
     window_spec = Window.partitionBy("Ticker").orderBy("Date")
 
-    # 3. Perform Calculations
+    # Perform Calculations
     silver_df = raw_df \
         .withColumn("Daily_Return", (F.col("Close") / F.lag("Close").over(window_spec)) - 1) \
         .withColumn("7_Day_MA", F.avg("Close").over(window_spec.rowsBetween(-6, 0))) \
         .withColumn("7_Day_Vol", F.stddev("Daily_Return").over(window_spec.rowsBetween(-6, 0)))
 
-    # 4. Clean up and Save
+    # Clean up and Save
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     silver_df.drop("filename").write.mode("overwrite").parquet(output_path)
 
